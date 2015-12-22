@@ -26,6 +26,36 @@ scripts = browserify(scripts, {
   outputFile: 'app.js'
 });
 
+// Copy scripts to output directory
+var backbone = funnel('node_modules/backbone', {
+  destDir: 'scripts',
+  files: ['backbone-min.js', 'backbone-min.map']
+});
+
+var jquery = funnel('node_modules/jquery/dist', {
+  destDir: 'scripts'
+});
+
+var json2 = funnel('node_modules/json2/lib/JSON2/static', {
+  destDir: 'scripts',
+  files: ['json2.js']
+});
+
+var marionette = funnel('node_modules/backbone.marionette/lib', {
+  destDir: 'scripts',
+  files: ['backbone.marionette.js', 'backbone.marionette.map']
+});
+
+var q = funnel('node_modules/q', {
+  destDir: 'scripts',
+  files: ['q.js']
+});
+
+var underscore = funnel('node_modules/underscore', {
+  destDir: 'scripts',
+  files: ['underscore-min.js', 'underscore-min.map']
+});
+
 // This builds all the Javascript Templates (JST) into JS files where the
 // templates have been wrapped in functions using underscore's template system.
 var templates = templateBuilder('app/templates', {
@@ -52,7 +82,13 @@ var bootstrapStyles = funnel('node_modules/bootstrap/dist/css', {
 var views = jade('app/views');
 
 module.exports = mergeTrees([styles, scripts, views, templates,
+  backbone,
   bootstrapStyles,
   faFonts,
-  faStyles
+  faStyles,
+  jquery,
+  json2,
+  marionette,
+  q,
+  underscore
 ]);
