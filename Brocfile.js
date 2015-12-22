@@ -36,6 +36,23 @@ var templates = templateBuilder('app/templates', {
   }
 });
 
+// Copy Font Awesome files to output directory
+var faFonts = funnel('node_modules/font-awesome/fonts', {
+  destDir: 'fonts'
+});
+var faStyles = funnel('node_modules/font-awesome/css', {
+  destDir: 'styles'
+});
+
+// Copy bootstrap files to output directory
+var bootstrapStyles = funnel('node_modules/bootstrap/dist/css', {
+  destDir: 'styles'
+});
+
 var views = jade('app/views');
 
-module.exports = mergeTrees([styles, scripts, views, templates]);
+module.exports = mergeTrees([styles, scripts, views, templates,
+  bootstrapStyles,
+  faFonts,
+  faStyles
+]);
