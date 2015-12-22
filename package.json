@@ -1,0 +1,39 @@
+{
+  "name": "template-broccoli-app",
+  "version": "0.0.0",
+  "description": "Template for Broccoli App",
+  "private": "yes",
+  "main": "index.js",
+  "engines": {
+    "node": "4.1.x",
+    "npm": "2.14.x"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "James Badger <jpbadger@ucalgary.ca>",
+  "license": "MIT",
+  "dependencies": {
+    "babel": "^6.1.18",
+    "broccoli": "^0.16.3",
+    "broccoli-babel-transpiler": "^5.5.0",
+    "broccoli-browserify": "^0.1.0",
+    "broccoli-cli": "^1.0.0",
+    "broccoli-funnel": "^0.2.3",
+    "broccoli-jade": "^1.0.1",
+    "broccoli-merge-trees": "^0.2.1",
+    "broccoli-mincer": "0.0.5",
+    "broccoli-sass": "^0.6.6",
+    "broccoli-slow-trees": "^2.0.0",
+    "broccoli-template-builder": "git+https://github.com/GeoSensorWebLab/broccoli-template-builder.git",
+    "browserify": "^12.0.1",
+    "commander": "^2.8.1",
+    "copy-dereference": "^1.0.0",
+    "express": "^4.7.2",
+    "node-sass": "^3.2.0",
+    "q": "^1.4.1",
+    "rimraf": "^2.4.4",
+    "tiny-lr": "0.0.9",
+    "underscore": "^1.8.3"
+  }
+}
