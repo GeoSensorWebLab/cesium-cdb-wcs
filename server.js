@@ -1,10 +1,12 @@
-var broccoli = require('broccoli');
+var broccoli            = require('broccoli');
 var copyDereferenceSync = require('copy-dereference').sync;
-var express = require('express');
-var fs = require('fs');
-var http = require('http');
-var path = require('path');
-var rimraf = require('rimraf');
+var express             = require('express');
+var fs                  = require('fs');
+var gzipStatic          = require('connect-gzip-static');
+var http                = require('http');
+var path                = require('path');
+var Q                   = require('q');
+var rimraf              = require('rimraf');
 
 // Clean existing data
 function clean(directory) {
@@ -13,13 +15,11 @@ function clean(directory) {
   }
 }
 
-clean("public");
-
 // Build application
 function build(output) {
   var node = broccoli.loadBrocfile();
   var builder = new broccoli.Builder(node);
-  builder.build()
+  return builder.build()
     .then(function (hash) {
       var dir = hash.directory;
       copyDereferenceSync(dir, output);
@@ -28,8 +28,6 @@ function build(output) {
       return builder.cleanup();
     });
 }
-
-build("public");
 
 // Start up server
 function serve() {
@@ -45,7 +43,9 @@ function serve() {
     }
   });
   app.use(router);
-  app.use(express.static("public"));
+  app.use(gzipStatic(__dirname + "/public", {
+    maxAge: 31536000 * 1000 // 1 year
+  }));
 
   var server = app.listen(process.env.PORT || 5000, function () {
     var host = server.address().address;
@@ -54,5 +54,9 @@ function serve() {
     console.log('Example app listening at http://%s:%s', host, port);
   });
 }
-
-serve();
+Q(clean("public"))
+.then(function() {
+  return build("public");
+})
+.then(serve)
+.done();

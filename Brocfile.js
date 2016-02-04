@@ -1,14 +1,17 @@
 // This is the Brocfile. It sets up all the assets from the input JS/CSS/images
 // and so on and converts them to static assets in the output directory or
 // preview server.
-var _ = require('underscore');
-var babel = require('broccoli-babel-transpiler');
-var browserify = require('broccoli-browserify');
-var compileSass = require('broccoli-sass');
-var funnel = require('broccoli-funnel');
-var jade = require('broccoli-jade');
-var mergeTrees = require('broccoli-merge-trees');
+var _               = require('underscore');
+var babel           = require('broccoli-babel-transpiler');
+var browserify      = require('broccoli-browserify');
+var concat          = require('broccoli-concat');
+var compileSass     = require('broccoli-sass');
+var funnel          = require('broccoli-funnel');
+var gzip            = require('broccoli-gzip');
+var jade            = require('broccoli-jade');
+var mergeTrees      = require('broccoli-merge-trees');
 var templateBuilder = require('broccoli-template-builder');
+var uglify          = require('broccoli-uglify-sourcemap');
 
 var sassDir = 'app/styles';
 var scripts = 'app/scripts';
@@ -26,34 +29,97 @@ scripts = browserify(scripts, {
   outputFile: 'app.js'
 });
 
-// Copy scripts to output directory
-var backbone = funnel('node_modules/backbone', {
-  destDir: 'scripts',
-  files: ['backbone-min.js', 'backbone-min.map']
+// == Funnel external libraries into individual trees ==
+var defaultOptions = {
+  include: [
+    "**/*.css",
+    "**/*.js",
+    "**/*.map"
+  ]
+};
+
+var backbone    = funnel('node_modules/backbone', defaultOptions);
+var bootstrap   = funnel('node_modules/bootstrap/dist', defaultOptions);
+var fontAwesome = funnel('node_modules/font-awesome', defaultOptions);
+var jquery      = funnel('node_modules/jquery/dist', defaultOptions);
+var json2       = funnel('node_modules/json2/lib/JSON2/static', defaultOptions);
+var leaflet     = funnel('node_modules/leaflet/dist', defaultOptions);
+var marionette  = funnel('node_modules/backbone.marionette/lib', defaultOptions);
+var q           = funnel('node_modules/q', defaultOptions);
+var underscore  = funnel('node_modules/underscore', defaultOptions);
+var vendor      = funnel('vendor', defaultOptions);
+
+var libraryTree = mergeTrees([
+  backbone,
+  bootstrap,
+  fontAwesome,
+  jquery,
+  json2,
+  leaflet,
+  marionette,
+  q,
+  underscore,
+  vendor
+]);
+
+// == Concatenate script trees ==
+// Use inputFiles to specify loading order.
+
+var allScripts = concat(mergeTrees([
+  libraryTree,
+  scripts
+]), {
+  inputFiles: [
+    'q.js',
+    'jquery.js',
+    'json2.js',
+    'underscore.js',
+    'backbone.js',
+    'backbone.marionette.js',
+    'leaflet-src.js',
+    'app.js'
+  ],
+  outputFile: 'app.js'
 });
 
-var jquery = funnel('node_modules/jquery/dist', {
-  destDir: 'scripts'
+// Apply uglify to minify the javascript in production.
+// (The process is too slow to do this on-the-fly in development.)
+if (process.env["NODE_ENV"] === "production") {
+  allScripts = uglify(allScripts);
+}
+
+// == Concatenate style trees ==
+// Use inputFiles to specify loading order.
+
+var allStyles = concat(mergeTrees([
+  libraryTree,
+  styles
+]), {
+  inputFiles: [
+    'css/bootstrap.css',
+    'css/font-awesome.css',
+    'leaflet.css',
+    'app.css'
+  ],
+  outputFile: 'style.css',
+  sourceMapConfig: {
+    extensions: ['css'],
+    mapCommentType: 'block'
+  }
 });
 
-var json2 = funnel('node_modules/json2/lib/JSON2/static', {
-  destDir: 'scripts',
-  files: ['json2.js']
+// == Funnel external assets into individual trees ==
+
+var faFonts = funnel('node_modules/font-awesome/fonts', {
+  destDir: 'fonts'
 });
 
-var marionette = funnel('node_modules/backbone.marionette/lib', {
-  destDir: 'scripts',
-  files: ['backbone.marionette.js', 'backbone.marionette.map']
+var leafletAssets = funnel('node_modules/leaflet/dist/images', {
+  destDir: 'images'
 });
 
-var q = funnel('node_modules/q', {
-  destDir: 'scripts',
-  files: ['q.js']
-});
-
-var underscore = funnel('node_modules/underscore', {
-  destDir: 'scripts',
-  files: ['underscore-min.js', 'underscore-min.map']
+var vendorAssets = funnel('vendor/images', {
+  destDir: 'images'
 });
 
 // This builds all the Javascript Templates (JST) into JS files where the
@@ -66,29 +132,22 @@ var templates = templateBuilder('app/templates', {
   }
 });
 
-// Copy Font Awesome files to output directory
-var faFonts = funnel('node_modules/font-awesome/fonts', {
-  destDir: 'fonts'
-});
-var faStyles = funnel('node_modules/font-awesome/css', {
-  destDir: 'styles'
-});
-
-// Copy bootstrap files to output directory
-var bootstrapStyles = funnel('node_modules/bootstrap/dist/css', {
-  destDir: 'styles'
-});
-
+// Compile view files
 var views = jade('app/views');
 
-module.exports = mergeTrees([styles, scripts, views, templates,
-  backbone,
-  bootstrapStyles,
+// Build gzipped versions of the files, but only in production.
+var doGZIP;
+if (process.env["NODE_ENV"] === "production") {
+  doGZIP = gzip;
+} else {
+  doGZIP = function(node) { return node; };
+}
+
+module.exports = doGZIP(mergeTrees([views, templates, vendorAssets,
   faFonts,
-  faStyles,
-  jquery,
-  json2,
-  marionette,
-  q,
-  underscore
-]);
+  leafletAssets,
+  allStyles,
+  allScripts
+]), {
+  extensions: ['css', 'html', 'js']
+});
