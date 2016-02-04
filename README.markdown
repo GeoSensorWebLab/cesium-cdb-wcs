@@ -2,7 +2,19 @@
 
 This repository is a template for starting a JavaScript Single Page Application using Broccoli as the build tool. It supports ES6/ES7 through Babel, and Sass through node-sass. Pages are built using Jade templates. JST templates are compiled automatically using Underscore.
 
-Also see the branches for this repository for versions that include Bootstrap/Font-Awesome, or Backbone/Marionette.
+By default, the following libraries are included:
+
+* Backbone
+* Bootstrap
+* Font Awesome
+* JQuery
+* JSON2
+* Leaflet
+* Marionette
+* Q
+* Underscore
+
+To remove them, edit `package.json` and `Brocfile.js`.
 
 ## Getting Started
 
