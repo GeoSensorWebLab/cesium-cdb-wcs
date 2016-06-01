@@ -5,8 +5,8 @@
   "private": "yes",
   "main": "index.js",
   "engines": {
-    "node": "4.1.x",
-    "npm": "2.14.x"
+    "node": ">= 6.0.0",
+    "npm": ">= 3.8.6"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
