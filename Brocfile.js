@@ -3,7 +3,6 @@
 // preview server.
 var _               = require('underscore');
 var babel           = require('broccoli-babel-transpiler');
-var browserify      = require('broccoli-browserify');
 var concat          = require('broccoli-concat');
 var compileSass     = require('broccoli-sass');
 var gzip            = require('broccoli-gzip');
@@ -12,6 +11,7 @@ var jade            = require('broccoli-jade');
 var mergeTrees      = require('broccoli-merge-trees');
 var templateBuilder = require('broccoli-template-builder');
 var uglify          = require('broccoli-uglify-sourcemap');
+var watchify        = require('broccoli-watchify');
 
 // Covert main.scss stylesheet to app.css stylesheet in output directory
 var styles = compileSass(['app/styles'], 'main.scss', 'app.css');
@@ -21,8 +21,10 @@ var styles = compileSass(['app/styles'], 'main.scss', 'app.css');
 // Then use browserify to handle any `require` statements and automatically
 // insert the required library inline.
 var scripts = babel("app/scripts");
-scripts = browserify(scripts, {
-  entries: ['./app.js'],
+scripts = watchify(scripts, {
+  browserify: {
+    entries: ['./app.js']
+  },
   outputFile: 'app.js'
 });
 scripts = babel(scripts, { browserPolyfill: true });
