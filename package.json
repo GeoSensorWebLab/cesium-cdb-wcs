@@ -14,7 +14,7 @@
   "author": "James Badger <jpbadger@ucalgary.ca>",
   "license": "MIT",
   "dependencies": {
-    "babel": "^6.1.18",
+    "babel-cli": "^6.24.0",
     "backbone": "^1.2.1",
     "backbone.marionette": "^2.4.4",
     "bootstrap": "^3.3.6",
