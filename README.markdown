@@ -1,6 +1,6 @@
 # Template: Broccoli App
 
-This repository is a template for starting a JavaScript Single Page Application using Broccoli as the build tool. It supports ES6/ES7 through Babel, and Sass through node-sass. Pages are built using Jade templates. JST templates are compiled automatically using Underscore.
+This repository is a template for starting a JavaScript Single Page Application using Broccoli as the build tool. It supports ES6/ES7 through Babel, and Sass through node-sass. Pages are built using Pug (formerly called 'Jade') templates. JST templates are compiled automatically using Underscore.
 
 By default, the following libraries are included:
 
@@ -19,8 +19,8 @@ To remove them, edit `package.json` and `Brocfile.js`.
 ## Getting Started
 
 1. Edit the `package.json` file to update the application name, license, repository, etc.
-2. Update the `index.jade` file for the application's title and layout
-3. Add in other libraries using NPM, import them using `Brocfile.js`, and include them from `index.jade`
+2. Update the `index.pug` file for the application's title and layout
+3. Add in other libraries using NPM, import them using `Brocfile.js`, and include them from `index.pug`
 4. Update LICENSE if necessary
 5. Update this README to explain your application, how to get it running in development, and how to deploy it
 6. Push the repository to Bitbucket

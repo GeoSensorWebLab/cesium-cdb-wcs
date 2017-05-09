@@ -8,7 +8,7 @@ var concat         = require('broccoli-concat');
 var gzip           = require('broccoli-gzip');
 var handlebars     = require('broccoli-handlebars-precompiler');
 var helper         = require('./helpers/broccoli');
-var jade           = require('broccoli-jade');
+var pug            = require('broccoli-pug');
 var mergeTrees     = require('broccoli-merge-trees');
 var uglify         = require('broccoli-uglify-sourcemap');
 var UnwatchedDir   = broccoliSource.UnwatchedDir;
@@ -135,7 +135,9 @@ var allStyles = new concat(new mergeTrees([helper.getStylesTree(), styles]), {
 });
 
 // Compile view files
-var views = new jade(new WatchedDir('app/views'));
+var views = new pug([new WatchedDir('app/views')], {
+  render: true
+});
 
 // Build gzipped versions of the files, but only in production.
 var doGZIP;
