@@ -1,26 +1,29 @@
 // This is the Brocfile. It sets up all the assets from the input JS/CSS/images
 // and so on and converts them to static assets in the output directory or
 // preview server.
-var babel           = require('broccoli-babel-transpiler');
-var compileSass     = require('broccoli-sass');
-var concat          = require('broccoli-concat');
-var gzip            = require('broccoli-gzip');
-var handlebars      = require('broccoli-handlebars-precompiler');
-var helper          = require('./helpers/broccoli');
-var jade            = require('broccoli-jade');
-var mergeTrees      = require('broccoli-merge-trees');
-var uglify          = require('broccoli-uglify-sourcemap');
-var watchify        = require('broccoli-watchify');
+var babel          = require('broccoli-babel-transpiler');
+var broccoliSource = require('broccoli-source');
+var compileSass    = require('broccoli-sass');
+var concat         = require('broccoli-concat');
+var gzip           = require('broccoli-gzip');
+var handlebars     = require('broccoli-handlebars-precompiler');
+var helper         = require('./helpers/broccoli');
+var jade           = require('broccoli-jade');
+var mergeTrees     = require('broccoli-merge-trees');
+var uglify         = require('broccoli-uglify-sourcemap');
+var UnwatchedDir   = broccoliSource.UnwatchedDir;
+var WatchedDir     = broccoliSource.WatchedDir;
+var watchify       = require('broccoli-watchify');
 
 
 // Covert main.scss stylesheet to app.css stylesheet in output directory
-var styles = new compileSass(['app/styles'], 'main.scss', 'app.css');
+var styles = new compileSass([new WatchedDir('app/styles')], 'main.scss', 'app.css');
 
 // Process all the JavaScript.
 // First we use babel to convert the ES6 to ES5 for web browsers.
 // Then use browserify to handle any `require` statements and automatically
 // insert the required library inline.
-var scripts = new babel("app/scripts");
+var scripts = new babel(new WatchedDir("app/scripts"));
 scripts = new watchify(scripts, {
   browserify: {
     entries: ['./app.js']
@@ -99,7 +102,7 @@ helper.loadLibrary('vendor', {
 // == Build Templates ==
 // Combines Handlebars templates into a single file. MUST be loaded after the
 // Handlebars library.
-var templates = new concat(new handlebars('app/templates', {
+var templates = new concat(new handlebars(new WatchedDir('app/templates'), {
   namespace: 'App.Templates',
   srcDir: '.'
 }), {
@@ -132,7 +135,7 @@ var allStyles = new concat(new mergeTrees([helper.getStylesTree(), styles]), {
 });
 
 // Compile view files
-var views = new jade('app/views');
+var views = new jade(new WatchedDir('app/views'));
 
 // Build gzipped versions of the files, but only in production.
 var doGZIP;

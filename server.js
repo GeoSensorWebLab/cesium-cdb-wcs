@@ -1,3 +1,5 @@
+// Load up a process to clear the build directory, build once from the Brocfile,
+// and serve it on 0.0.0.0:5000 with express. Based on broccoli/lib/builder.js
 var broccoli            = require('broccoli');
 var copyDereferenceSync = require('copy-dereference').sync;
 var express             = require('express');
@@ -16,17 +18,26 @@ function clean(directory) {
 }
 
 // Build application
-function build(output) {
+function build(outputDir) {
   var node = broccoli.loadBrocfile();
   var builder = new broccoli.Builder(node);
+
   return builder.build()
-    .then(function (hash) {
-      var dir = hash.directory;
-      copyDereferenceSync(dir, output);
-    })
-    .finally(function () {
-      return builder.cleanup();
-    });
+  .then(function() {
+    copyDereferenceSync(builder.outputPath, outputDir);
+  })
+  .finally(function() {
+    return builder.cleanup();
+  })
+  .catch(function(err) {
+    // Should show file and line/col if present
+    if (err.file) {
+      console.error('File: ' + err.file);
+    }
+    console.error(err.stack);
+    console.error('\nBuild failed');
+    process.exit(1);
+  });
 }
 
 // Start up server
