@@ -1,17 +1,17 @@
 // This is the Brocfile. It sets up all the assets from the input JS/CSS/images
 // and so on and converts them to static assets in the output directory or
 // preview server.
-var _               = require('underscore');
 var babel           = require('broccoli-babel-transpiler');
-var concat          = require('broccoli-concat');
 var compileSass     = require('broccoli-sass');
+var concat          = require('broccoli-concat');
 var gzip            = require('broccoli-gzip');
+var handlebars      = require('broccoli-handlebars-precompiler');
 var helper          = require('./helpers/broccoli');
 var jade            = require('broccoli-jade');
 var mergeTrees      = require('broccoli-merge-trees');
-var templateBuilder = require('broccoli-template-builder');
 var uglify          = require('broccoli-uglify-sourcemap');
 var watchify        = require('broccoli-watchify');
+
 
 // Covert main.scss stylesheet to app.css stylesheet in output directory
 var styles = compileSass(['app/styles'], 'main.scss', 'app.css');
@@ -84,17 +84,33 @@ helper.loadLibrary('node_modules/backbone.marionette/lib', {
   assets: []
 });
 
+helper.loadLibrary('node_modules/handlebars/dist', {
+  scripts: ['handlebars.js'],
+  styles: [],
+  assets: []
+});
+
 helper.loadLibrary('vendor', {
   scripts: [],
   styles: [],
   assets: ['images']
 });
 
+// == Build Templates ==
+// Combines Handlebars templates into a single file. MUST be loaded after the
+// Handlebars library.
+var templates = concat(handlebars('app/templates', {
+  namespace: 'App.Templates',
+  srcDir: '.'
+}), {
+  outputFile: '/templates.js'
+});
+
 // == Concatenate script trees ==
 // Merge the libraries tree with the app scripts tree, then concatenate into
 // a single script file.
-var allScripts = concat(mergeTrees([helper.getScriptsTree(), scripts]), {
-  inputFiles: ['libraries.js', 'app.js'],
+var allScripts = concat(mergeTrees([helper.getScriptsTree(), scripts, templates]), {
+  inputFiles: ['libraries.js', 'app.js', 'templates.js'],
   outputFile: 'app.js'
 });
 
@@ -115,16 +131,6 @@ var allStyles = concat(mergeTrees([helper.getStylesTree(), styles]), {
   }
 });
 
-// This builds all the Javascript Templates (JST) into JS files where the
-// templates have been wrapped in functions using underscore's template system.
-var templates = templateBuilder('app/templates', {
-  extensions: ['jst'],
-  outputFile: 'templates.js',
-  compile: function(string) {
-    return _.template(string, { variable: "obj" }).source;
-  }
-});
-
 // Compile view files
 var views = jade('app/views');
 
@@ -136,7 +142,7 @@ if (process.env["NODE_ENV"] === "production") {
   doGZIP = function(node) { return node; };
 }
 
-module.exports = doGZIP(mergeTrees([views, templates,
+module.exports = doGZIP(mergeTrees([views,
   helper.getAssetsTree(),
   allStyles,
   allScripts

@@ -1,6 +1,6 @@
-var broccoli = require('broccoli');
-var http = require('http');
-var express = require('express');
+var broccoli       = require('broccoli');
+var http           = require('http');
+var express        = require('express');
 var printSlowNodes = require('broccoli-slow-trees');
 
 var getBuilder = function() {
@@ -23,11 +23,11 @@ function serve (builder, options) {
   // Use express's Router to catch all routes and handle them by sending the
   // index path to the watcher.
   var router = express.Router();
-  router.get('/*', function(req, res) {
-    req.url = "/";
-    watcher(req, res);
+  router.get('/*', function(req, res, next) {
+    return watcher(req, res, next);
   });
   server.app.use(router);
+  server.app.use(express.static('public'));
 
   server.http = http.createServer(server.app);
 

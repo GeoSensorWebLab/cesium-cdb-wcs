@@ -25,6 +25,16 @@ To remove them, edit `package.json` and `Brocfile.js`.
 5. Update this README to explain your application, how to get it running in development, and how to deploy it
 6. Push the repository to Bitbucket
 
+## Upgrading Templates
+
+The template used to use Underscore for the templates, but the broccoli plugins are way outdated. Instead, use [Handlebars](http://handlebarsjs.com) templates.
+
+1. Install handlebars `npm install --save handlebars`
+2. Load Handlebars in `Brocfile.js` using `loadLibrary` helper
+3. Upgrade `Brocfile.js` to use Handlebars/concat, and load templates into scripts instead of final mergeTree node
+4. Replace `jst` template files with `hbs` files
+5. Replace `window.JST` usage in JS files with `window.App.Templates`
+
 ## Development Environment
 
 The app is JavaScript and builds using [Node.js](https://nodejs.org/). To start, install the base Node packages:
