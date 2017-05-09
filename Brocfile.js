@@ -14,20 +14,20 @@ var watchify        = require('broccoli-watchify');
 
 
 // Covert main.scss stylesheet to app.css stylesheet in output directory
-var styles = compileSass(['app/styles'], 'main.scss', 'app.css');
+var styles = new compileSass(['app/styles'], 'main.scss', 'app.css');
 
 // Process all the JavaScript.
 // First we use babel to convert the ES6 to ES5 for web browsers.
 // Then use browserify to handle any `require` statements and automatically
 // insert the required library inline.
-var scripts = babel("app/scripts");
-scripts = watchify(scripts, {
+var scripts = new babel("app/scripts");
+scripts = new watchify(scripts, {
   browserify: {
     entries: ['./app.js']
   },
   outputFile: 'app.js'
 });
-scripts = babel(scripts, { browserPolyfill: true });
+scripts = new babel(scripts, { browserPolyfill: true });
 
 // == Load External Libraries ==
 // Order is important. Scripts will be concatenated in this order, and
@@ -99,7 +99,7 @@ helper.loadLibrary('vendor', {
 // == Build Templates ==
 // Combines Handlebars templates into a single file. MUST be loaded after the
 // Handlebars library.
-var templates = concat(handlebars('app/templates', {
+var templates = new concat(new handlebars('app/templates', {
   namespace: 'App.Templates',
   srcDir: '.'
 }), {
@@ -109,7 +109,7 @@ var templates = concat(handlebars('app/templates', {
 // == Concatenate script trees ==
 // Merge the libraries tree with the app scripts tree, then concatenate into
 // a single script file.
-var allScripts = concat(mergeTrees([helper.getScriptsTree(), scripts, templates]), {
+var allScripts = new concat(new mergeTrees([helper.getScriptsTree(), scripts, templates]), {
   inputFiles: ['libraries.js', 'app.js', 'templates.js'],
   outputFile: 'app.js'
 });
@@ -117,11 +117,11 @@ var allScripts = concat(mergeTrees([helper.getScriptsTree(), scripts, templates]
 // Apply uglify to minify the javascript in production.
 // (The process is too slow to do this on-the-fly in development.)
 if (process.env["NODE_ENV"] === "production") {
-  allScripts = uglify(allScripts);
+  allScripts = new uglify(allScripts);
 }
 
 // == Concatenate style trees ==
-var allStyles = concat(mergeTrees([helper.getStylesTree(), styles]), {
+var allStyles = new concat(new mergeTrees([helper.getStylesTree(), styles]), {
   inputFiles: ['libraries.css', 'app.css'],
   outputFile: 'style.css',
   sourceMapConfig: {
@@ -132,17 +132,17 @@ var allStyles = concat(mergeTrees([helper.getStylesTree(), styles]), {
 });
 
 // Compile view files
-var views = jade('app/views');
+var views = new jade('app/views');
 
 // Build gzipped versions of the files, but only in production.
 var doGZIP;
 if (process.env["NODE_ENV"] === "production") {
-  doGZIP = gzip;
+  doGZIP = new gzip;
 } else {
   doGZIP = function(node) { return node; };
 }
 
-module.exports = doGZIP(mergeTrees([views,
+module.exports = doGZIP(new mergeTrees([views,
   helper.getAssetsTree(),
   allStyles,
   allScripts

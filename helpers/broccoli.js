@@ -11,14 +11,14 @@ var styles      = [];
 var BroccoliHelper = {
   // Merge all the asset trees in the same order they were loaded.
   getAssetsTree() {
-    return mergeTrees(assets);
+    return new mergeTrees(assets);
   },
 
   // Merge all the library trees, and concatenate the script assets in the same
   // order they were loaded.
   // Returns a tree with a single file, `libraries.js`
   getScriptsTree() {
-    return concat(libraryTree, {
+    return new concat(libraryTree, {
       headerFiles: scripts,
       outputFile: 'libraries.js'
     });
@@ -28,7 +28,7 @@ var BroccoliHelper = {
   // order they were loaded.
   // Returns a tree with a single file, `libraries.css`
   getStylesTree() {
-    return concat(libraryTree, {
+    return new concat(libraryTree, {
       headerFiles: styles,
       outputFile: 'libraries.css'
     });
@@ -44,7 +44,7 @@ var BroccoliHelper = {
   // `exclude` is a list of files to specifically exclude. Useful for when two
   // libraries include the same-named files.
   loadLibrary(path, options) {
-    var lib = funnel(path, {
+    var lib = new funnel(path, {
       include: [
         "**/*.css",
         "**/*.js",
@@ -52,12 +52,12 @@ var BroccoliHelper = {
       ],
       exclude: options.exclude || []
     });
-    libraryTree = mergeTrees([libraryTree, lib]);
+    libraryTree = new mergeTrees([libraryTree, lib]);
     scripts     = scripts.concat(options.scripts);
     styles      = styles.concat(options.styles);
 
     var assetTrees = options.assets.map(function(asset) {
-      return funnel(path + '/' + asset, {
+      return new funnel(path + '/' + asset, {
         destDir: asset
       });
     });
