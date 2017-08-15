@@ -94,7 +94,7 @@ helper.loadLibrary('node_modules/cesium/Build/CesiumUnminified', {
 });
 
 helper.loadLibrary('vendor', {
-  scripts: [],
+  scripts: ['scripts/GeotiffParser.js', 'scripts/WCSTerrainProvider.js'],
   styles: [],
   assets: ['images']
 });
