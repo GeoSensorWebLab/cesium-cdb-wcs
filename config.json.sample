@@ -1,0 +1,7 @@
+{
+  "wcs": {
+    "url": "https://gsw-app.gswlab.ca:8443/geoserver/wcs",
+    "username": "",
+    "password": ""
+  }
+}
