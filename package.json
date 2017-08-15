@@ -1,7 +1,7 @@
 {
-  "name": "template-broccoli-app",
-  "version": "2.0.0",
-  "description": "Template for Broccoli App",
+  "name": "cesium-cdb-demo",
+  "version": "1.0.0",
+  "description": "Demo of Cesium.js and CDB",
   "private": "yes",
   "main": "index.js",
   "engines": {
