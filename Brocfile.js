@@ -113,8 +113,13 @@ var templates = new concat(new handlebars(new WatchedDir('app/templates'), {
 // Merge the libraries tree with the app scripts tree, then concatenate into
 // a single script file.
 var allScripts = new concat(new mergeTrees([helper.getScriptsTree(), scripts, templates]), {
-  inputFiles: ['libraries.js', 'app.js', 'templates.js'],
-  outputFile: 'app.js'
+  headerFiles: ['libraries.js', 'app.js', 'templates.js'],
+  outputFile: 'app.js',
+  sourceMapConfig: {
+    enabled: false,
+    extensions: ['js'],
+    mapCommentType: 'block'
+  }
 });
 
 // Apply uglify to minify the javascript in production.
@@ -125,7 +130,7 @@ if (process.env["NODE_ENV"] === "production") {
 
 // == Concatenate style trees ==
 var allStyles = new concat(new mergeTrees([helper.getStylesTree(), styles]), {
-  inputFiles: ['libraries.css', 'app.css'],
+  headerFiles: ['libraries.css', 'app.css'],
   outputFile: 'style.css',
   sourceMapConfig: {
     enabled: false,
