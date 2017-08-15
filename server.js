@@ -6,9 +6,9 @@ var express             = require('express');
 var fs                  = require('fs');
 var gzipStatic          = require('connect-gzip-static');
 var http                = require('http');
-var path                = require('path');
 var Q                   = require('q');
 var rimraf              = require('rimraf');
+var router              = require('./router');
 
 // Clean existing data
 function clean(directory) {
@@ -43,16 +43,6 @@ function build(outputDir) {
 // Start up server
 function serve() {
   var app = express();
-  var router = express.Router();
-  router.get('/*', function(req, res, next) {
-    // Check for resource requests and redirect to the index file for them
-    if (path.extname(req.path).length > 0) {
-      next();
-    } else {
-      req.url = "/index.html";
-      next();
-    }
-  });
   app.use(router);
   app.use(gzipStatic(__dirname + "/public", {
     maxAge: 31536000 * 1000 // 1 year
