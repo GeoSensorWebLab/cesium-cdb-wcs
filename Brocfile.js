@@ -87,6 +87,12 @@ helper.loadLibrary('node_modules/handlebars/dist', {
   assets: []
 });
 
+helper.loadLibrary('node_modules/cesium/Build/CesiumUnminified', {
+  scripts: ['Cesium.js'],
+  styles: [],
+  assets: []
+});
+
 helper.loadLibrary('vendor', {
   scripts: [],
   styles: [],
