@@ -90,7 +90,7 @@ helper.loadLibrary('node_modules/handlebars/dist', {
 helper.loadLibrary('node_modules/cesium/Build/CesiumUnminified', {
   scripts: ['Cesium.js'],
   styles: [],
-  assets: []
+  assets: ['Assets', 'Widgets', 'Workers']
 });
 
 helper.loadLibrary('vendor', {
