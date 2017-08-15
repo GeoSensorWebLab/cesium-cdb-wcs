@@ -57,12 +57,6 @@ helper.loadLibrary('node_modules/font-awesome', {
   assets: ['fonts']
 });
 
-helper.loadLibrary('node_modules/leaflet/dist', {
-  scripts: ['leaflet-src.js'],
-  styles: ['leaflet.css'],
-  assets: ['images']
-});
-
 helper.loadLibrary('node_modules/q', {
   scripts: ['q.js'],
   styles: [],
