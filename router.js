@@ -3,7 +3,6 @@ var path    = require('path');
 var proxy   = require('http-proxy');
 
 var config = require('./config');
-
 var WCSproxy = proxy.createProxyServer({
   auth: config.wcs.username + ':' + config.wcs.password,
   changeOrigin: true,
@@ -14,7 +13,7 @@ var WCSproxy = proxy.createProxyServer({
 // Use express's Router to catch all routes and handle them by sending the
 // index path to the watcher.
 var router = express.Router();
-router.get('/wcs*', function(req, res) {
+router.get('/geoserver*', function(req, res) {
   WCSproxy.web(req, res);
 });
 
