@@ -4,5 +4,12 @@
 $(function() {
   CESIUM_BASE_URL = "/";
   console.log("Loading Demo");
-  var viewer = new Cesium.Viewer('content');
+
+  var osm = Cesium.createOpenStreetMapImageryProvider({
+      url : 'https://a.tile.openstreetmap.org/'
+  });
+  var viewer = new Cesium.Viewer('content', {
+    imageryProvider: osm,
+    baseLayerPicker: false
+  });
 });
